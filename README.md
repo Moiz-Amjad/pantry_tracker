@@ -34,15 +34,3 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
-
-# Private_Keys
-
-# Firebase Firestore keys
-
-apiKey: AIzaSyAlbAtYM_rM8RUJcNtuK7OTKmHeQjOx1x0,
-authDomain: pantry-app-de6dc.firebaseapp.com,
-projectId: pantry-app-de6dc,
-storageBucket: pantry-app-de6dc.appspot.com,
-messagingSenderId: 103555998304,
-appId: 1:103555998304:web:6f25cafe99f96febdc9905,
-measurementId: G-GDFNVJEEZV,

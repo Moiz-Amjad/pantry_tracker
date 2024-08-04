@@ -8,7 +8,14 @@ import {
   TextField,
 } from "@mui/material";
 import { firestore } from "@/firebase";
-import { collection, getDocs, query, doc, setDoc } from "firebase/firestore";
+import {
+  collection,
+  getDocs,
+  query,
+  doc,
+  setDoc,
+  deleteDoc,
+} from "firebase/firestore";
 import { useEffect, useState } from "react";
 
 const modalStyle = {
@@ -37,6 +44,17 @@ export default function Home() {
     try {
       // Add a new document with a unique ID
       await setDoc(doc(firestore, "pantry", item), { name: item });
+      // Update the pantry list after adding the item
+      updatePantry();
+    } catch (error) {
+      console.error("Error adding document: ", error);
+    }
+  };
+
+  const removeItem = async (item) => {
+    try {
+      // Add a new document with a unique ID
+      await deleteDoc(doc(firestore, "pantry", item), { name: item });
       // Update the pantry list after adding the item
       updatePantry();
     } catch (error) {
@@ -116,19 +134,30 @@ export default function Home() {
 
         <Stack height="300px" width="600px" spacing={2} overflow={"auto"}>
           {pantry.map((i) => (
-            <Box
-              key={i}
-              minHeight="150px"
-              width="100%"
-              display={"flex"}
-              justifyContent={"center"}
-              alignItems={"center"}
-              bgcolor={"#f0f0f0"}
-            >
-              <Typography variant="h3" color={"#333"} textAlign={"center"}>
-                {i}
-              </Typography>
-            </Box>
+            <Stack direction={"row"}>
+              <Box
+                key={i}
+                minHeight="100px"
+                width="100%"
+                display={"flex"}
+                justifyContent={"space-between"}
+                paddingX={5}
+                alignItems={"center"}
+                bgcolor={"#f0f0f0"}
+              >
+                <Typography variant="h4" color={"#333"} textAlign={"center"}>
+                  {i}
+                </Typography>
+                <Button
+                  variant="contained"
+                  bgcolor={"#ffffff"}
+                  onClick={() => removeItem(i)}
+                  maxHeight={"50px"}
+                >
+                  Remove
+                </Button>
+              </Box>
+            </Stack>
           ))}
         </Stack>
       </Box>
