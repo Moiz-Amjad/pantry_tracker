@@ -41,6 +41,7 @@ export default function Home() {
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
   const [itemName, setItemName] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
 
   const addItem = async (item) => {
     try {
@@ -81,14 +82,21 @@ export default function Home() {
     }
   };
 
-  const updatePantry = async () => {
+  const updatePantry = async (searchTerm = "") => {
     const snapshot = query(collection(firestore, "pantry"));
     const docs = await getDocs(snapshot);
     const pantryList = [];
     docs.forEach((doc) => {
       pantryList.push({ name: doc.id, ...doc.data() });
     });
-    setPantry(pantryList);
+    if (searchTerm === "") {
+      setPantry(pantryList);
+    } else {
+      const filteredPantry = pantryList.filter((item) =>
+        item.name.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+      setPantry(filteredPantry);
+    }
   };
 
   useEffect(() => {
@@ -150,7 +158,25 @@ export default function Home() {
           </Typography>
         </Box>
 
-        <Stack height="300px" width="600px" spacing={2} overflow={"auto"}>
+        <Stack
+          height="300px"
+          width="600px"
+          spacing={2}
+          overflow={"auto"}
+          paddingTop={1}
+        >
+          <TextField
+            label="Search Items"
+            variant="outlined"
+            fullWidth
+            value={searchTerm}
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+              updatePantry(e.target.value);
+            }}
+            sx={{ marginBottom: 2 }}
+          />
+
           {pantry.map((item) => (
             <Box
               key={item.name}
