@@ -15,6 +15,8 @@ import {
   doc,
   setDoc,
   deleteDoc,
+  getDoc,
+  updateDoc,
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
 
@@ -42,10 +44,17 @@ export default function Home() {
 
   const addItem = async (item) => {
     try {
-      // Add a new document with a unique ID
-      await setDoc(doc(firestore, "pantry", item), { name: item });
+      const docRef = doc(collection(firestore, "pantry"), item);
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        const { count } = docSnap.data();
+        await updateDoc(docRef, { count: count + 1 });
+      } else {
+        // Add a new document with a unique ID
+        await setDoc(doc(firestore, "pantry", item), { count: 1 });
+      }
       // Update the pantry list after adding the item
-      updatePantry();
+      await updatePantry();
     } catch (error) {
       console.error("Error adding document: ", error);
     }
@@ -53,10 +62,20 @@ export default function Home() {
 
   const removeItem = async (item) => {
     try {
-      // Add a new document with a unique ID
-      await deleteDoc(doc(firestore, "pantry", item), { name: item });
+      const docRef = doc(collection(firestore, "pantry"), item);
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        const { count } = docSnap.data();
+        if (count === 1) {
+          // Delete document if count is 1
+          await deleteDoc(doc(firestore, "pantry", item));
+        } else {
+          // Reduce count of document
+          await updateDoc(docRef, { count: count - 1 });
+        }
+      }
       // Update the pantry list after adding the item
-      updatePantry();
+      await updatePantry();
     } catch (error) {
       console.error("Error adding document: ", error);
     }
@@ -67,9 +86,8 @@ export default function Home() {
     const docs = await getDocs(snapshot);
     const pantryList = [];
     docs.forEach((doc) => {
-      pantryList.push(doc.id);
+      pantryList.push({ name: doc.id, ...doc.data() });
     });
-    console.log(pantryList);
     setPantry(pantryList);
   };
 
@@ -133,31 +151,31 @@ export default function Home() {
         </Box>
 
         <Stack height="300px" width="600px" spacing={2} overflow={"auto"}>
-          {pantry.map((i) => (
-            <Stack direction={"row"}>
-              <Box
-                key={i}
-                minHeight="100px"
-                width="100%"
-                display={"flex"}
-                justifyContent={"space-between"}
-                paddingX={5}
-                alignItems={"center"}
-                bgcolor={"#f0f0f0"}
+          {pantry.map((item) => (
+            <Box
+              key={item.name}
+              minHeight="100px"
+              width="100%"
+              display={"flex"}
+              justifyContent={"space-around"}
+              paddingX={5}
+              alignItems={"center"}
+              bgcolor={"#f0f0f0"}
+            >
+              <Typography variant="h4" color={"#333"} textAlign={"center"}>
+                {item.name.charAt(0).toUpperCase() + item.name.slice(1)}
+              </Typography>
+              <Typography variant="h4" color={"#333"} textAlign={"center"}>
+                {"x" + item.count}
+              </Typography>
+              <Button
+                variant="contained"
+                bgcolor={"#ffffff"}
+                onClick={() => removeItem(item.name)}
               >
-                <Typography variant="h4" color={"#333"} textAlign={"center"}>
-                  {i}
-                </Typography>
-                <Button
-                  variant="contained"
-                  bgcolor={"#ffffff"}
-                  onClick={() => removeItem(i)}
-                  maxHeight={"50px"}
-                >
-                  Remove
-                </Button>
-              </Box>
-            </Stack>
+                Remove
+              </Button>
+            </Box>
           ))}
         </Stack>
       </Box>
