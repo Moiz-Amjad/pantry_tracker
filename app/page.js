@@ -114,7 +114,7 @@ export default function Home() {
       gap={2}
     >
       <Button variant="contained" onClick={handleOpen}>
-        Add
+        Add New item
       </Button>
 
       <Modal
@@ -194,6 +194,13 @@ export default function Home() {
               <Typography variant="h4" color={"#333"} textAlign={"center"}>
                 {"x" + item.count}
               </Typography>
+              <Button
+                variant="contained"
+                bgcolor={"#ffffff"}
+                onClick={() => addItem(item.name)}
+              >
+                Add
+              </Button>
               <Button
                 variant="contained"
                 bgcolor={"#ffffff"}
