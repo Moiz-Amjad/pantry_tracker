@@ -45,6 +45,9 @@ export default function Home() {
 
   const addItem = async (item) => {
     try {
+      // Ensures all items first alphaet is capitalized
+      item = item.charAt(0).toUpperCase() + item.slice(1);
+
       const docRef = doc(collection(firestore, "pantry"), item);
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
